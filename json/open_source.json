@@ -1,0 +1,23 @@
+[
+    {
+        "project_name": "Coding Problem Generator", 
+        "description": "Simulate LeetCode generate coding problem.", 
+        "url": "https://github.com/cool-void-zero/coding-problem-generator", 
+        "demo": "https://t.me/coding_problem_generator_bot", 
+        "license": "MIT"
+    }, 
+    {
+        "project_name": "Fetch Binance Kline", 
+        "description": "Use pure JavaScript to call Binance API to get spot kline data.", 
+        "url": "https://github.com/cool-void-zero/fetch-binance-kline-frontend", 
+        "demo": "https://cool-void-zero.github.io/fetch-binance-kline-frontend/", 
+        "license": "MIT"
+    }, 
+    {
+        "project_name": "Digital Signature", 
+        "description": "An online digital signature. Use \"signature_pad\" and \"pdf-lib\" to implement.", 
+        "url": "https://github.com/cool-void-zero/digital-signature", 
+        "demo": "https://cool-void-zero.github.io/digital-signature/", 
+        "license": "MIT"
+    }
+]
