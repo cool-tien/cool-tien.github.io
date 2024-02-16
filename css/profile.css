@@ -1,0 +1,87 @@
+html, body {
+    margin: 0px;
+    height: 100%;
+    background: #1f1f1f;
+    /*  [VS Code default font setting] (not fit will )
+
+        font-family:'Courier New', Courier, monospace;
+        font-size: 14px;
+    */
+}
+
+.gray {
+    color: gray;
+}
+
+.vs-border {
+    border: #313131 solid 1px;
+    border-bottom: 0px;
+}
+
+.vs-gray {
+    color: #313131;
+}
+
+.vs-file, .vs-path {
+    font-size: 14px;
+    color: gray;
+}
+
+.vs-file {
+    padding: 0.5rem;
+    
+    border: #313131 solid 1px;
+    border-bottom: 0px;
+    cursor: pointer;
+}
+
+.vs-file-active {
+    border-top: #0078d4 solid 2px;
+    /* bootstrap default text-light */
+    color: #f8f9fa;
+}
+
+.vs-line {
+    display: inline-block;
+    /*
+    width: 55px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    */
+
+    width: 60px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    text-align: end;
+}
+
+/*
+    [VS Code - JSON File Style]
+*/
+.tab {
+    padding-left: 1.5rem;
+}
+
+.tab-double {
+    padding-left: 3rem;
+}
+
+.json-property {
+    color: #8cdcfe;
+}
+
+.json-string {
+    color: #c87b54;
+}
+
+.json-number {
+    color: #c8da6b;
+}
+
+.json-yellow {
+    color: #f1d700;
+}
+
+.json-purple {
+    color: #da70b3;
+}

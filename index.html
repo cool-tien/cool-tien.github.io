@@ -4,99 +4,24 @@
   <title>cool ∅</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Bootstrap 5.3.0 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+  <!-- Bootstrap 5.3.2 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   <!-- jQuery 3.7.0 -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <!-- Fontawesome 6.4.0 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- typed.js -->
   <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
-  <style>
-	
-	html, body {
-		margin: 0px;
-		height: 100%;
-		background: #1f1f1f;
-	}
-	
-	.gray {
-		color: gray;
-	}
-
-	.vs-border {
-		border: #313131 solid 1px;
-		border-bottom: 0px;
-	}
-
-	.vs-gray {
-		color: #313131;
-	}
-
-	.vs-file, .vs-path {
-		font-size: 14px;
-		color: gray;
-	}
-
-	.vs-file {
-		padding: 0.5rem;
-		
-		border: #313131 solid 1px;
-		border-bottom: 0px;
-		cursor: pointer;
-	}
-	
-	.vs-file-active {
-		border-top: #0078d4 solid 2px;
-		/* bootstrap default text-light */
-		color: #f8f9fa;
-	}
-
-	.vs-line {
-		display: inline-block;
-		width: 55px;
-		padding-left: 1.5rem;
-		padding-right: 1.5rem;
-	}
-
-	/*
-		[VS Code - JSON File Style]
-	*/
-	.tab {
-		padding-left: 1.5rem;
-	}
-
-	.tab-double {
-		padding-left: 3rem;
-	}
-
-	.json-property {
-		color: #8cdcfe;
-	}
-
-	.json-string {
-		color: #c87b54;
-	}
-
-	.json-number {
-		color: #c8da6b;
-	}
-	
-	.json-yellow {
-		color: #f1d700;
-	}
-	
-	.json-purple {
-		color: #da70b3;
-	}
-
-  </style>
+  <!-- Customize -->
+  <link rel="stylesheet" href="./css/profile.css" />
+  <script src="./js/profile.js"></script>
   <script>
 
 	const typedEffect = ({
 		selector, strings, 
-		typeSpeed = 10, backSpeed = 0, 
+		//	set to faster 
+		typeSpeed = 1, backSpeed = 1, 
 		cursorChar = "|", 
 		loop = false, 
 	}) => {
@@ -108,223 +33,41 @@
 		});
 	}
 	
-	const buildTypedElement = (json) => {
-		const is_array = Array.isArray(json);
-		let html_str = ``;
-		let line = 1;
+	$(async() => {
+		let profile = new Profile({
+			files: {
+				"about_me": "json/about_me.json", 
+				"portfolio": "/json/portfolio.json", 
+				"contact": "json/contact.json", 
+			}
+		});
 		
-		if(is_array){
-			//	start of array
-			html_str += `
-				<div>
-					<span class="vs-line gray">${ line++ }</span>
-					<span class="json-yellow">[</span>
-				</div>
-			`;
-
-			for(let i=0; i<json.length; i++){
-				//	property list - start looping
-				html_str += `
-					<div>
-						<span class="vs-line gray">${ line++ }</span>
-						<span class="tab json-purple">{</span>
-					</div>
-				`;
-				
-				 for(const [key, val] of Object.entries(json[i])){
-					const type = typeof(val);
-					const is_link = (type === "string")? val.startsWith("http"): false;
-					const val_content = (is_link)? 
-						`<a href="${val}" target="_blank" class="json-string">${val}</a>`: val;
-					
-					html_str += `
-						<div>
-							<span class="vs-line gray">${ line++ }</span>
-							<span class="tab-double">
-								<span class="json-property">
-									"${key}"
-								</span>:
-								<span class="json-${ typeof(val) }">
-									"${val_content}"
-								</span>, 
-							</span>
-						</div>
-					`;
-				}
-				
-				//	property list - end looping
-				html_str += `
-					<div>
-						<span class="vs-line gray">${ line++ }</span>
-						<span class="tab json-purple">}</span>
-						${(i + 1 === json.length)? "": ","}
-					</div>
-				`;
-			}
-			
-			//	end of array
-			html_str += `
-				<div>
-					<span class="vs-line gray">${ line++ }</span>
-					<span class="json-yellow">]</span>
-				</div>
-			`;
-			html_str += `
-				<span>
-					<span class="vs-line">${ line++ }</span>
-					<span class="typed-cursor typed-cursor--blink">|</span>
-				</span>
-			`;
+		try{
+			//	await generate element
+			await profile.initiate();
+		}catch(error){
+			console.error(error);
 		}
-		else{
-			//	start of array
-			html_str += `
-				<div>
-					<span class="vs-line gray">${ line++ }</span>
-					<span class="json-yellow">{</span>
-				</div>
-			`;
-			
-			for(const [key, val] of Object.entries(json)){
-				let type = Array.isArray(val)? "array": typeof(val);
-				let ele_val = ``;
-
-				if(type === "array"){
-					ele_val = `
-						<span class="json-purple">[</span>
-							${
-								val.map(s => 
-									`<span class="json-string">"${s}"</span>`
-								).join(", ")
-							}
-						<span class="json-purple">]</span> , 
-					`;
-				}
-				else{
-					ele_val = `
-						<span class="json-${ typeof(val) }">
-							"${val}"
-						</span>, 
-					`;
-				}
-				
-				html_str += `
-					<div>
-						<span class="vs-line gray">${ line++ }</span>
-						<span class="tab">
-							<span class="json-property">
-								"${key}"
-							</span>:
-							${ ele_val }
-						</span>
-					</div>
-				`;
-			}
-
-			//	start of array
-			html_str += `
-				<div>
-					<span class="vs-line gray">${ line++ }</span>
-					<span class="json-yellow">}</span>
-				</div>
-			`;
-			html_str += `
-				<span>
-					<span class="vs-line">${ line++ }</span>
-					<span class="typed-cursor typed-cursor--blink">|</span>
-				</span>
-			`;
-		}
-
-		return html_str;
-	}
-
-	$(() => {
-		let typing_mode = false;
-		let json_about_me = {
-			"nickname": "cool", 
-			"position": "Software Engineer", 
-			"working_experience": "2.8 years", 
-			"skillsets": [
-				"JavaScript", "Node.js", "React Native", 
-				"T-SQL"
-			], 
-			"introduction": ""
-		};
-		let json_open_source = [
-			{
-				"project_name": "Coding Problem Generator", 
-				"description": "Simulate LeetCode generate coding problem.", 
-				"url": "https://github.com/cool-void-zero/coding-problem-generator", 
-				"demo": "https://t.me/coding_problem_generator_bot", 
-				"license": "MIT"
-			}, 
-			{
-				"project_name": "Fetch Binance Kline", 
-				"description": "Use pure JavaScript to call Binance API to get spot kline data.", 
-				"url": "https://github.com/cool-void-zero/fetch-binance-kline-frontend", 
-				"demo": "https://cool-void-zero.github.io/fetch-binance-kline-frontend/", 
-				"license": "MIT"
-			}, 
-			{
-				"project_name": "Digital Signature", 
-				"description": "An online digital signature. Use \"signature_pad\" and \"pdf-lib\" to implement.", 
-				"url": "https://github.com/cool-void-zero/digital-signature", 
-				"demo": "https://cool-void-zero.github.io/digital-signature/", 
-				"license": "MIT"
-			}
-		];
-		let json_contact = [
-			{
-				"type": "Github", 
-				"url": "https://github.com/cool-void-zero/"
-			}, 
-			{
-				"type": "LeetCode", 
-				"url": "https://leetcode.com/cool-void-zero/"
-			}, 
-			{
-				"type": "Facebook", 
-				"url": "https://www.facebook.com/cool.void.zero/"
-			}, 
-			{
-				"type": "Instagram", 
-				"url": "https://www.instagram.com/cool.void.zero/"
-			}, 
-			{
-				"type": "LinkedIn", 
-				"url": "https://www.linkedin.com/in/cool-void-zero/"
-			},
-			{
-				"type": "Email", 
-				"url": "coolmantien@gmail.com"
-			}
-		];
-		
-		let json_content = {
-			"about_me": buildTypedElement(json_about_me), 
-			"open_source": buildTypedElement(json_open_source), 
-			"contact": buildTypedElement(json_contact), 
-		};
 		
 		//	show opening file
 		typedEffect({
 			selector: "#filename", 
-			strings: ["about_me.json"], 
+			strings: [`${profile.active_section}.json`], 
 			cursorChar: "", 
 		});
 		//	show json file content
 		typedEffect({
-			selector: "#file-content-about_me", 
-			strings: [json_content["about_me"]], 
+			selector: `#file-content-${profile.active_section}`, 
+			strings: [profile.json_content[profile.active_section]], 
 			cursorChar: "", 
-			typeSpeed: 0, 
 		});
 		
+		const files_id = Object.keys(profile.files).map(key => `#file-${key}`).join(", ");
 		
-		$("#file-about_me, #file-open_source, #file-contact").bind("click", function(){
+		//	Change Other File Effect
+		$(files_id).bind('click', function(){
 			const filename = this.id.substring(this.id.lastIndexOf('-') + 1);
-			
+
 			//	clear html content
 			$("#filename").html("");
 			$(`#file-content-${filename}`).html("");
@@ -332,18 +75,19 @@
 			//	hidden all the typed cursor blink
 			$(".typed-cursor").addClass("d-none");
 
-			//	swap class
-			$("#file-about_me").removeClass("vs-file-active");
-			$("#file-open_source").removeClass("vs-file-active");
-			$("#file-contact").removeClass("vs-file-active");
+			//	remove all "vs-file-active" class from "profile.files"
+			for(const section in profile.files)
+				$(`#file-${section}`).removeClass("vs-file-active");
+			//	add "vs-file-active" class to current "this" element
 			$(`#${this.id}`).addClass("vs-file-active");
 
-			$("#file-content-about_me").addClass("d-none");
-			$("#file-content-open_source").addClass("d-none");
-			$("#file-content-contact").addClass("d-none");
+			//	add all "d-none" class to "profile.files"
+			for(const section in profile.files)
+				$(`#file-content-${section}`).addClass("d-none");
+			//	remove "d-none" class to current "this" element
 			$(`#file-content-${filename}`).removeClass("d-none");
 
-			if(typing_mode){
+			if(profile.getTypingMode()){
 				//	change opening file
 				typedEffect({
 					selector: "#filename", 
@@ -353,19 +97,33 @@
 				//	change json file content
 				typedEffect({
 					selector: `#file-content-${filename}`, 
-					strings: [json_content[filename]], 
+					strings: [profile.json_content[filename]], 
 					cursorChar: "", 
-					typeSpeed: 0, 
 				});
 			}
 			else{
 				$("#filename").html(`${filename}.json`);
-				$(`#file-content-${filename}`).html(json_content[filename]);
+				$(`#file-content-${filename}`).html(profile.json_content[filename]);
 			}
 		});
 
+		//	Switch Typing Effect
 		$("#switch-typing-effect").bind("change", () => {
 			typing_mode = document.querySelector("#switch-typing-effect").checked;
+			profile.setTypingMode(typing_mode);
+		});
+
+		//	Similar Close File
+		$(".fa-xmark").bind("click", function(){
+			const id = this.parentElement.parentElement.id;
+			const filename = id.substring(id.lastIndexOf('-') + 1);
+
+			$(`#file-${filename}`).css({
+				"display": "none"
+			});
+			$(`#file-content-${filename}`).css({
+				"display": "none"
+			});
 		});
 	});
 
@@ -375,41 +133,9 @@
   
   <!-- Page: VS Code -->
   <div class="d-flex h-100 p-3">
-   <!-- Top Menu Bar (VS Code - Filename & Path) -->
-   <div id="vs-file-path">
-	<div class="row w-100 m-0">
-
-	<!-- File: about_me.json -->
-	<span id="file-about_me" class="col-auto vs-file vs-file-active">
-	 <span class="ms-2 me-1 json-yellow">{ }</span>
-	 <span class="text-light">about_me.json</span>
-	 <span class="ms-2 text-light">
-	  <i class="fa-solid fa-xmark"></i>
-	 </span>
-	</span>
-	<!-- End of File: about_me.json -->
-
-	<!-- File: open_source.json -->
-	<span id="file-open_source" class="col-auto vs-file">
-	 <span class="ms-2 me-1 json-yellow">{ }</span>
-	 <span class="text-light">open_source.json</span>
-	 <span class="ms-2 text-light">
-	  <i class="fa-solid fa-xmark"></i>
-	 </span>
-	</span>
-	<!-- End of File: open_source.json -->
-	
-	<!-- File: contact.json -->
-	<span id="file-contact" class="col-auto vs-file">
-	 <span class="ms-2 me-1 json-yellow">{ }</span>
-	 <span class="text-light">contact.json</span>
-	 <span class="ms-2 text-light">
-	  <i class="fa-solid fa-xmark"></i>
-	 </span>
-	</span>
-	<!-- End of File: contact.json -->
-	
-	</div>
+   <div>
+	<!-- Top Menu Bar (VS Code - Filename & Path) -->
+	<div id="vs-file-path" class="row w-100 m-0"></div>
 	
 	<!-- VS Code - Full Path -->
 	<div id="vs-path" class="text-secondary ms-2 pt-2 pb-1">
@@ -418,10 +144,8 @@
 	</div>
 	<!-- End of VS Code - Full Path -->
 
-	<!-- JSON File Content -->
-	<div id="file-content-about_me"></div>
-	<div id="file-content-open_source" class="d-none"></div>
-	<div id="file-content-contact" class="d-none"></div>
+	<!-- JSON File Content (will generate children element) -->
+	<div id="file-content"></div>
 
 	<!-- Typing Effect Switch -->
 	<div class="position-absolute d-none d-md-flex p-3 top-0 end-0">
@@ -431,8 +155,8 @@
 	 </div>
 	</div>
 	<!-- End of Typing Effect Switch -->
+
    </div>
-   <!-- End of Top Menu Bar (VS Code - Filename & Path) -->   
   </div>
   <!-- End of Page: VS Code -->
 
