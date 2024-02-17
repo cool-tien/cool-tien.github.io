@@ -18,23 +18,9 @@
   <script src="./js/profile.js"></script>
   <script>
 
-	const typedEffect = ({
-		selector, strings, 
-		//	set to faster 
-		typeSpeed = 1, backSpeed = 1, 
-		cursorChar = "|", 
-		loop = false, 
-	}) => {
-		return new Typed(selector, {
-			strings, 
-			typeSpeed, backSpeed, 
-			cursorChar, 
-			loop, 
-		});
-	}
-	
 	$(async() => {
 		let profile = new Profile({
+			host: `https://cool-void-zero.github.io`, 
 			files: {
 				"about_me": "/json/about_me.json", 
 				"portfolio": "/json/portfolio.json", 
@@ -43,29 +29,25 @@
 		});
 		
 		try{
-			//	await generate element
+			//	generate require elements and loading with typing effect
 			await profile.initiate();
+			profile.activeSection(profile.getActiveSection(), true);
 		}catch(error){
 			console.error(error);
+			console.log(`[Document Ready] Fail to initiate profile.`);
 		}
-		
-		//	show opening file
-		typedEffect({
-			selector: "#filename", 
-			strings: [`${profile.active_section}.json`], 
-			cursorChar: "", 
-		});
-		//	show json file content
-		typedEffect({
-			selector: `#file-content-${profile.active_section}`, 
-			strings: [profile.json_content[profile.active_section]], 
-			cursorChar: "", 
-		});
-		
-		const files_id = Object.keys(profile.files).map(key => `#file-${key}`).join(", ");
-		
+
+		/*
+			[Bind Element Event]
+		*/
 		//	Change Other File Effect
+		const files_id = Object.keys(profile.files).map(key => `#file-${key}`).join(", ");
 		$(files_id).bind('click', function(){
+			if(profile.getIsClosingFile()){
+				profile.setIsClosingFile(false);
+				return;
+			}
+			
 			const filename = this.id.substring(this.id.lastIndexOf('-') + 1);
 
 			//	clear html content
@@ -86,25 +68,11 @@
 				$(`#file-content-${section}`).addClass("d-none");
 			//	remove "d-none" class to current "this" element
 			$(`#file-content-${filename}`).removeClass("d-none");
-
-			if(profile.getTypingMode()){
-				//	change opening file
-				typedEffect({
-					selector: "#filename", 
-					strings: [`${filename}.json`], 
-					cursorChar: "", 
-				});
-				//	change json file content
-				typedEffect({
-					selector: `#file-content-${filename}`, 
-					strings: [profile.json_content[filename]], 
-					cursorChar: "", 
-				});
-			}
-			else{
-				$("#filename").html(`${filename}.json`);
-				$(`#file-content-${filename}`).html(profile.json_content[filename]);
-			}
+			
+			const new_index = profile.checkActiveIndex(filename);
+			profile.setActiveIndex(new_index);
+			profile.activeSection(filename);
+			
 		});
 
 		//	Switch Typing Effect
@@ -117,13 +85,9 @@
 		$(".fa-xmark").bind("click", function(){
 			const id = this.parentElement.parentElement.id;
 			const filename = id.substring(id.lastIndexOf('-') + 1);
-
-			$(`#file-${filename}`).css({
-				"display": "none"
-			});
-			$(`#file-content-${filename}`).css({
-				"display": "none"
-			});
+			
+			profile.closeFile(filename);
+			profile.activeSection();
 		});
 	});
 

@@ -1,31 +1,47 @@
 class Profile{
     constructor({
         typing_mode = false, 
+		host = window.location.origin, 
         files = {}, 
-        active_section = "", 
         active_index = 0, 
     }){
         this.typing_mode = typing_mode;
+		this.host = host;
         this.files = files;
         this.json_content = {};
-        this.active_section = active_section;
         this.active_index = active_index;
-        
-        if(active_section === "")
-            this.active_section = Object.keys(files)[0];
+		this.active_section = Object.keys(files)[active_index];
+		//	for tracking closed file
+		this.is_closing_file = false;
     }
 
+	/*
+		[Getter]
+	*/
     getTypingMode = () => this.typing_mode;
+	getJSONContent = () => this.json_content;
+	getActiveIndex = () => this.active_index;
+	getActiveSection = (index = this.active_index) => Object.keys(this.files)[index];
+	getIsClosingFile = () => this.is_closing_file;
     
-    setTypingMode = (mode = false) => {
-        this.typing_mode = mode;
-    }
-
-    getJSONContent = () => this.json_content;
-
-    setJSONContent = (json_content) => {
-        this.json_content = json_content;
-    }
+	/*
+		[Setter]
+	*/
+    setTypingMode = (mode = false) => this.typing_mode = mode;
+    setJSONContent = (json_content) => this.json_content = json_content;
+    setActiveIndex = (index) => {
+		this.active_index = index;
+		this.active_section = this.getActiveSection(index);
+	}
+	setActiveSection = (section = this.getActiveSection(this.active_index)) => {
+		this.active_section = section;
+	}
+	setIsClosingFile = (flag = false) => this.is_closing_file = flag;
+	
+	getMaxFilesIndex = () => Object.keys(this.files).length;
+	checkActiveIndex = (section = this.active_section) => {
+		return Object.keys(this.files).indexOf(section);
+	}
 
     buildTypedElement = (json) => {
         const emails = [
@@ -170,15 +186,13 @@ class Profile{
 	}
 
     buildJSONContent = async(files = this.files) => {
-        const host = window.location.origin;
-        // const host = `https://cool-void-zero.github.io/`;
         let result = {};
 
         try{
             let promise_files = [];
             
             for(const section in files){
-                const url = host + files[section];
+                const url = this.host + files[section];
 
                 promise_files.push(
                     fetch(url).then(res => res.json())
@@ -198,6 +212,7 @@ class Profile{
             return result;
         }catch(error){
             console.error(error);
+			console.log(`[buildJSONContent] Fail to fetch files.`);
         }
 
         return result;
@@ -239,6 +254,69 @@ class Profile{
             parent_element.innerHTML += file_content_element;
         }
     }
+
+	//	active file
+	activeSection = (active_section = this.getActiveSection(), typing_mode = this.getTypingMode()) => {
+		if(active_section === undefined){
+			this.setActiveIndex(0);
+			active_section = this.getActiveSection(0);
+		}
+
+		//	show the new active files
+		$(`#file-${active_section}`).addClass("vs-file-active");
+		$(`#file-content-${active_section}`).removeClass("d-none");
+		
+		if(typing_mode){
+			//	typing filename
+			new Typed("#filename", {
+				strings: [`${active_section}.json`], 
+				typeSpeed: 1, backSpeed: 0, 
+				cursorChar: "", 
+				loop: false, 
+			});
+
+			//	typing file content
+			new Typed(`#file-content-${active_section}`, {
+				strings: [this.getJSONContent()[active_section]], 
+				typeSpeed: 1, backSpeed: 0, 
+				cursorChar: "", 
+				loop: false, 
+			});
+		}
+		else{
+			$("#filename").html(`${active_section}.json`);
+			$(`#file-content-${active_section}`).html(
+				this.getJSONContent()[active_section]
+			);
+		}
+	}
+
+	closeFile = (filename) => {
+		const is_active_file = (filename === this.getActiveSection());
+		
+		//	delete filename and close the file and it content
+		delete this.files[filename];
+		$(`#file-${filename}`).css({
+			"display": "none"
+		});
+		$(`#file-content-${filename}`).css({
+			"display": "none"
+		});
+
+		this.setIsClosingFile(true);
+
+		//	switch "active_section" to previous file, if the closed file = "active_section"
+		if(is_active_file){
+			//	Closed all the files
+			if(this.getMaxFilesIndex() === 0)
+				$(`#vs-path`).addClass("d-none");
+			//	Switch to another files
+			else{
+				//	update active section to new index
+				this.setActiveSection(this.getActiveSection());
+			}
+		}
+	}
 
     //  true = initiate successful
     initiate = async() => {

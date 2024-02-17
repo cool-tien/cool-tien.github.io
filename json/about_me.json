@@ -1,12 +1,12 @@
 {
     "nickname": "cool", 
-    "position": "Software Engineer", 
-    "working_experience": "3.3 years", 
     "skillsets": [
         "JavaScript", "Node.js", "SQL", 
         "React Native", "Flutter", "Bootstrap", 
         "jQuery", "CSS", "HTML", 
         "PHP", "Java"
     ] ,
+    "position": "Software Engineer", 
+    "working_experience": "3.3 years", 
     "introduction": "Hi, ..."
 }
