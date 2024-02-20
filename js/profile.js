@@ -1,13 +1,13 @@
 class Profile{
     constructor({
-        typing_mode = false, 
-		host = window.location.origin, 
+        host = window.location.origin, 
         files = {}, 
+		typing_mode = false, 
         active_index = 0, 
     }){
-        this.typing_mode = typing_mode;
-		this.host = host;
+        this.host = host;
         this.files = files;
+		this.typing_mode = typing_mode;
         this.json_content = {};
         this.active_index = active_index;
 		this.active_section = Object.keys(files)[active_index];
@@ -83,10 +83,10 @@ class Profile{
                     else if(is_email)
                         val_content = `<a href="mailto://${val}" target="_blank" class="json-string">${val}</a>`;
 
-                    html_str += `
-						<div>
-							<span class="vs-line gray">${ line++ }</span>
-							<span class="tab-double">
+					html_str += `
+						<div class="row m-0">
+							<span class="col-auto vs-line gray">${ line++ }</span>
+							<span class="col pe-0 tab-double" style="max-width: 1000px;">
 								<span class="json-property">
 									"${key}"
 								</span>:
@@ -155,9 +155,9 @@ class Profile{
 				}
 				
 				html_str += `
-					<div>
-						<span class="vs-line gray">${ line++ }</span>
-						<span class="tab">
+					<div class="row m-0">
+						<span class="col-auto vs-line gray">${ line++ }</span>
+						<span class="col pe-0 tab" style="max-width: 1000px;">
 							<span class="json-property">
 								"${key}"
 							</span>:
@@ -264,6 +264,7 @@ class Profile{
 
 		//	show the new active files
 		$(`#file-${active_section}`).addClass("vs-file-active");
+		$(`#file-content-${active_section}`).html("");
 		$(`#file-content-${active_section}`).removeClass("d-none");
 		
 		if(typing_mode){
@@ -281,6 +282,7 @@ class Profile{
 				typeSpeed: 1, backSpeed: 0, 
 				cursorChar: "", 
 				loop: false, 
+				onComplete: () => this.updateThumbnail({}), 
 			});
 		}
 		else{
@@ -288,6 +290,7 @@ class Profile{
 			$(`#file-content-${active_section}`).html(
 				this.getJSONContent()[active_section]
 			);
+			this.updateThumbnail({});
 		}
 	}
 
@@ -316,6 +319,42 @@ class Profile{
 				this.setActiveSection(this.getActiveSection());
 			}
 		}
+	}
+
+	updateThumbnail = async({
+		preview_id = "file-content", 
+		canvas_id = "canvas-content", 
+		scale = 0.25, 
+		//	width of line content element 
+		offset_x = 60, 
+	}) => {
+		return new Promise((resolve, reject) => {
+			const preview_element = document.getElementById(preview_id);
+			const canvas_content = document.getElementById(canvas_id);
+			const width = preview_element.clientWidth - offset_x;
+
+			//	clear "canvas_content" and re-generate again apply to it
+			canvas_content.innerHTML = "";
+			html2canvas(preview_element, {
+				scale, width,
+				x: offset_x, 
+			}).then(function(canvas){
+				const w = canvas.width;
+				const h = canvas.height;
+
+				canvas.style.width = `${w}px`;
+				canvas.style.height = `${h}px`;
+				canvas_content.appendChild(canvas);
+
+				// return true;
+				resolve(true);
+			}).catch(error => {
+				console.error(error);
+				console.log(`[updateThumbnail] Fail to convert element into canvas.`);
+
+				reject(false);
+			});
+		});
 	}
 
     //  true = initiate successful

@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- typed.js -->
   <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+  <!-- html2canvas 1.4.1 -->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <!-- Customize -->
   <link rel="stylesheet" href="./css/profile.css" />
   <script src="./js/profile.js"></script>
@@ -25,21 +27,20 @@
 				"about_me": "/json/about_me.json", 
 				"portfolio": "/json/portfolio.json", 
 				"contact": "/json/contact.json", 
-			}
+			}, 
+			typing_mode: false, 
+			active_index: 0, 
 		});
 		
 		try{
 			//	generate require elements and loading with typing effect
 			await profile.initiate();
-			profile.activeSection(profile.getActiveSection(), true);
+			profile.activeSection(profile.getActiveSection(), profile.typing_mode);
 		}catch(error){
 			console.error(error);
 			console.log(`[Document Ready] Fail to initiate profile.`);
 		}
 
-		/*
-			[Bind Element Event]
-		*/
 		//	Change Other File Effect
 		const files_id = Object.keys(profile.files).map(key => `#file-${key}`).join(", ");
 		$(files_id).bind('click', function(){
@@ -110,6 +111,8 @@
 
 	<!-- JSON File Content (will generate children element) -->
 	<div id="file-content"></div>
+	<!-- Canvas for preview codes on right site -->
+	<div id="canvas-content" class="d-none d-md-flex"></div>
 
 	<!-- Typing Effect Switch -->
 	<div class="position-absolute d-none d-md-flex p-3 top-0 end-0">
