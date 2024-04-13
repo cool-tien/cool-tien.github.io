@@ -1,12 +1,10 @@
 {
     "nickname": "cool", 
-    "skillsets": [
-        "JavaScript", "Node.js", "SQL", 
-        "React Native", "Flutter", "Bootstrap", 
-        "jQuery", "CSS", "HTML", 
-        "PHP", "Java"
+    "top_skillsets": [
+        "JavaScript", "Node.js", "T-SQL", "Bootstrap", "React Native"
     ] ,
     "position": "Software Engineer", 
     "working_experience": "3.3 years", 
-    "introduction": "一位使用自身的能力進行創造或生產價值並給予提供給世界。具備高效協同、規劃、執行、專注以及獨立思考能力，不懈進取永無止境地成長，以實現自我超越。樂意與他人分享知識，這有助於引導他人成長同時也能夠認知到自己表達地是否清晰以及對知識點的掌握。超越編程，編程是一種創作工具，類似於音樂透過特定的“規律與排列組合”打造出一個應用或產品用於提供功能服務給予世界上某些人使用。"
+    "status": "Roading to MERN stack developer", 
+    "highlight": "Committed to using personal abilities to create value and contribute to the world. Relentless pursuit and never-ending growth to achieve self-transcendence."
 }
