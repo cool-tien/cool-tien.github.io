@@ -192,8 +192,9 @@ class Profile{
             let promise_files = [];
             
             for(const section in files){
-                const url = this.host + files[section];
-
+                const url = (files[section].includes("https://"))? 
+					files[section]: this.host + files[section];
+				
                 promise_files.push(
                     fetch(url).then(res => res.json())
                 );
@@ -311,8 +312,11 @@ class Profile{
 		//	switch "active_section" to previous file, if the closed file = "active_section"
 		if(is_active_file){
 			//	Closed all the files
-			if(this.getMaxFilesIndex() === 0)
-				$(`#vs-path`).addClass("d-none");
+			if(this.getMaxFilesIndex() === 0){
+				$(`#vs-page`).addClass("d-none");
+				$(`#closed-page`).addClass("d-flex");
+				$(`#closed-page`).removeClass("d-none");
+			}
 			//	Switch to another files
 			else{
 				//	update active section to new index
@@ -324,9 +328,10 @@ class Profile{
 	updateThumbnail = async({
 		preview_id = "file-content", 
 		canvas_id = "canvas-content", 
-		scale = 0.25, 
 		//	width of line content element 
 		offset_x = 60, 
+		//	default width of preview set to fixed size
+		fixed_width = 180, 
 	}) => {
 		return new Promise((resolve, reject) => {
 			const preview_element = document.getElementById(preview_id);
@@ -336,17 +341,16 @@ class Profile{
 			//	clear "canvas_content" and re-generate again apply to it
 			canvas_content.innerHTML = "";
 			html2canvas(preview_element, {
-				scale, width,
-				x: offset_x, 
-			}).then(function(canvas){
-				const w = canvas.width;
-				const h = canvas.height;
+				width, x: offset_x, 
+			}).then(canvas => {
+				const adjust_rate = fixed_width / canvas.width;
+				const w = canvas.width * adjust_rate;
+				const h = canvas.height * adjust_rate;
 
 				canvas.style.width = `${w}px`;
 				canvas.style.height = `${h}px`;
 				canvas_content.appendChild(canvas);
 
-				// return true;
 				resolve(true);
 			}).catch(error => {
 				console.error(error);

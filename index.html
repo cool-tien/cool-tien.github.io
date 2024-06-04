@@ -11,7 +11,7 @@
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
   <!-- Fontawesome 6.4.0 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- typed.js -->
+  <!-- typed.js 2.0.16 -->
   <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
   <!-- html2canvas 1.4.1 -->
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -23,10 +23,18 @@
 	$(async() => {
 		let profile = new Profile({
 			// host: `https://cool-void-zero.github.io`, 
+			/*
 			files: {
 				"about_me": "/json/about_me.json", 
 				"portfolio": "/json/portfolio.json", 
 				"contact": "/json/contact.json", 
+			}, 
+			*/
+			
+			files: {
+				"about_me": "https://cool-void-zero.github.io/json/about_me.json", 
+				"portfolio": "https://cool-void-zero.github.io/json/portfolio.json", 
+				"contact": "https://cool-void-zero.github.io/json/contact.json", 
 			}, 
 			typing_mode: false, 
 			active_index: 0, 
@@ -41,9 +49,12 @@
 			console.log(`[Document Ready] Fail to initiate profile.`);
 		}
 
-		//	Change Other File Effect
+		//	Files 
 		const files_id = Object.keys(profile.files).map(key => `#file-${key}`).join(", ");
-		$(files_id).bind('click', function(){
+		$(files_id).css("user-select", "none");
+		
+		//	Change Other File Effect
+		$(files_id).bind("click", function(){
 			if(profile.getIsClosingFile()){
 				profile.setIsClosingFile(false);
 				return;
@@ -73,7 +84,33 @@
 			const new_index = profile.checkActiveIndex(filename);
 			profile.setActiveIndex(new_index);
 			profile.activeSection(filename);
+		});
+
+		//	Files Drag Effect
+		$(files_id).bind("mousedown", function(e){
+			function mouseMoveHandler(e){
+				$("#draggable").css({
+					display: `block`, 
+					top: `${e.clientY}px`, 
+					left: `${e.clientX}px`, 
+				});
+			}
+
+			function mouseUpHandler(){
+				$("#draggable").css("display", "none");
+
+				document.removeEventListener("mousemove", mouseMoveHandler);
+				document.removeEventListener("mouseup", mouseUpHandler);
+			}
+
+			$("#draggable").html($(`#${this.id}`).html());
+			$("#draggable").css({
+				top: `${e.clientY}px`, 
+				left: `${e.clientX + 5}px`, 
+			});
 			
+			document.addEventListener("mousemove", mouseMoveHandler);
+			document.addEventListener("mouseup", mouseUpHandler);
 		});
 
 		//	Switch Typing Effect
@@ -96,9 +133,10 @@
  </head>
  <body class="text-light">
   
-  <!-- Page: VS Code -->
+  <!-- Container -->
   <div class="d-flex h-100 p-3">
-   <div>
+	<!-- Page: VS Code -->
+   <div id="vs-page">
 	<!-- Top Menu Bar (VS Code - Filename & Path) -->
 	<div id="vs-file-path" class="row w-100 m-0"></div>
 	
@@ -122,10 +160,60 @@
 	 </div>
 	</div>
 	<!-- End of Typing Effect Switch -->
-
    </div>
+   <!-- End of Page: VS Code -->
+
+   <!-- Page: Closed All Files -->
+   <div id="closed-page" class="d-none flex-column w-100 h-100 align-items-center justify-content-center">
+    <img src="./images/vs-code-logo-dark.png" title="A image of VS Code Logo" />
+    <!-- Row: Show All Commands -->
+    <div class="row mt-4 mb-space">
+     <div class="col p-0 text-end closed-file-text">
+      Show All Commands
+     </div>
+     <div class="col closed-file-command">
+      <span class="keyboard">Ctrl</span> + <span class="keyboard">Shift</span> + <span class="keyboard">P</span>
+     </div>
+    </div>
+
+    <!-- Row: Open File -->
+    <div class="row mb-space">
+     <div class="col p-0 text-end closed-file-text">
+      Open File
+     </div>
+     <div class="col closed-file-command">
+      <span class="keyboard">Ctrl</span> + <span class="keyboard">O</span>
+     </div>
+    </div>
+
+    <!-- Row: Open Folder -->
+    <div class="row mb-space">
+     <div class="col p-0 text-end closed-file-text">
+      Open Folder
+     </div>
+     <div class="col closed-file-command">
+      <span class="keyboard">Ctrl</span> + <span class="keyboard">K</span> 
+      <span class="mx-1"></span>
+      <span class="keyboard">Ctrl</span> + <span class="keyboard">O</span> 
+     </div>
+    </div>
+     
+    <!-- Row: Open Recent -->
+    <div class="row mb-space">
+     <div class="col p-0 text-end closed-file-text">
+      Open Recent
+     </div>
+     <div class="col closed-file-command">
+      <span class="keyboard">Ctrl</span> + <span class="keyboard">R</span> 
+     </div>
+    </div>
+   </div>
+   <!-- End of Page: Closed All Files -->
+   
+   <!-- Drag Element -->
+   <div id="draggable" class="vs-file-active"></div>
   </div>
-  <!-- End of Page: VS Code -->
+  <!-- End of Container -->
 
  </body>
 </html>
