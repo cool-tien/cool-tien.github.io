@@ -7,6 +7,7 @@ class Profile{
     }){
         this.host = host;
         this.files = files;
+		this.files_id = Object.keys(files).map(key => `file-${key}`);
 		this.typing_mode = typing_mode;
         this.json_content = {};
         this.active_index = active_index;
@@ -18,15 +19,24 @@ class Profile{
 	/*
 		[Getter]
 	*/
+	getFiles = () => this.files;
+	getFilesID = () => this.files_id;
     getTypingMode = () => this.typing_mode;
 	getJSONContent = () => this.json_content;
 	getActiveIndex = () => this.active_index;
-	getActiveSection = (index = this.active_index) => Object.keys(this.files)[index];
+	getActiveSection = (index = this.active_index) => {
+		const file_id = this.files_id[index];
+		
+		return file_id?.substring(file_id.indexOf('-') + 1) || 
+			this.getActiveSection(this.files_id.length - 1);
+	}
 	getIsClosingFile = () => this.is_closing_file;
     
 	/*
 		[Setter]
 	*/
+	setFiles = (files = {}) => this.files = files;
+	setFilesID = (files_id = []) => this.files_id = files_id;
     setTypingMode = (mode = false) => this.typing_mode = mode;
     setJSONContent = (json_content) => this.json_content = json_content;
     setActiveIndex = (index) => {
@@ -38,9 +48,20 @@ class Profile{
 	}
 	setIsClosingFile = (flag = false) => this.is_closing_file = flag;
 	
-	getMaxFilesIndex = () => Object.keys(this.files).length;
 	checkActiveIndex = (section = this.active_section) => {
-		return Object.keys(this.files).indexOf(section);
+		const file_id = `file-${section}`;
+
+		return this.files_id.indexOf(file_id);
+	}
+
+	switchPosition = ({ source, target }) => {
+		//	adjust the "target" to zero, when moved to the most left side
+		target = (target === -1)? 0: target;
+		//	if same position quit function, not need switch
+		if(source === target) return; 
+		
+		[this.files_id[source], this.files_id[target]] = [this.files_id[target], this.files_id[source]];
+		this.setActiveIndex(target);
 	}
 
     buildTypedElement = (json) => {
@@ -297,6 +318,11 @@ class Profile{
 
 	closeFile = (filename) => {
 		const is_active_file = (filename === this.getActiveSection());
+		const close_active_index = this.getActiveIndex();
+		
+		//	remove files
+		const file_id = `file-${filename}`;
+		this.files_id.splice(this.files_id.indexOf(file_id), 1);
 		
 		//	delete filename and close the file and it content
 		delete this.files[filename];
@@ -312,10 +338,14 @@ class Profile{
 		//	switch "active_section" to previous file, if the closed file = "active_section"
 		if(is_active_file){
 			//	Closed all the files
-			if(this.getMaxFilesIndex() === 0){
+			if(this.files_id.length === 0){
 				$(`#vs-page`).addClass("d-none");
 				$(`#closed-page`).addClass("d-flex");
 				$(`#closed-page`).removeClass("d-none");
+			}
+			//	Closed latest file
+			else if(this.files_id.length === close_active_index){
+				this.setActiveSection(this.getActiveSection(close_active_index - 1));
 			}
 			//	Switch to another files
 			else{
@@ -338,8 +368,6 @@ class Profile{
 			const canvas_content = document.getElementById(canvas_id);
 			const width = preview_element.clientWidth - offset_x;
 
-			//	clear "canvas_content" and re-generate again apply to it
-			canvas_content.innerHTML = "";
 			html2canvas(preview_element, {
 				width, x: offset_x, 
 			}).then(canvas => {
@@ -349,6 +377,8 @@ class Profile{
 
 				canvas.style.width = `${w}px`;
 				canvas.style.height = `${h}px`;
+				//	clear "canvas_content" and re-generate again apply to it
+				canvas_content.innerHTML = "";
 				canvas_content.appendChild(canvas);
 
 				resolve(true);
@@ -378,4 +408,5 @@ class Profile{
     }
 }
 
+// export default Profile;
 window.Profile = Profile;
