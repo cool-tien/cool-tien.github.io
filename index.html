@@ -21,24 +21,17 @@
   <script>
 
 	let profile = new Profile({
-		// host: `https://cool-void-zero.github.io`, 
-		/*
-		files: {
-			"about_me": "/json/about_me.json", 
-			"portfolio": "/json/portfolio.json", 
-			"contact": "/json/contact.json", 
-		}, 
-		*/
-		
 		files: {
 			"about_me": "https://cool-void-zero.github.io/json/about_me.json", 
 			"portfolio": "https://cool-void-zero.github.io/json/portfolio.json", 
 			"contact": "https://cool-void-zero.github.io/json/contact.json", 
 		}, 
-		typing_mode: false, 
 		active_index: 0, 
+		typing_mode: false, 
+		design_mode: false, 
 	});
 	
+	//	when mousedown the filename
 	function handleFileClick({ profile, filename }){
 		//	clear html content
 		$("#filename").html("");
@@ -71,6 +64,7 @@
 		profile.activeSection(filename);
 	}
 
+	//	when dragging the filename
 	function handleFileMoving({ profile, files_id, this_id }){
 		//	get the moving position index
 		const getPositionIndex = (moving_x, files_position = []) => {
@@ -149,40 +143,21 @@
 			$(`#vs-file-path`).html(html_contents.join(""));
 
 			//	re-bind the filenames clicked effect (switchPosition will rebuild the html element)
-			$(files_id).unbind("click");
-			$(files_id).unbind("mousedown");
+			$(id_list).unbind("click");
+			$(id_list).unbind("mousedown");
 			$(".fa-xmark").unbind("mousedown");
 			$(".fa-xmark").unbind("mouseup");
-			$(files_id).bind("click", function(event){
-				//	0 = left click, 1 = middle, 2 = right click
-				if(event.button === 0){
-					const filename = this.id.substring(this.id.lastIndexOf('-') + 1);
-
-					handleFileClick({ filename, profile });
-				}
-			});
-			$(files_id).bind("mousedown", function(){
+			
+			//	Similar close file
+			$(".fa-xmark").bind("mousedown", handleCloseFile);
+			//	Similar files selected, dragging, switch position effect
+			$(id_list).bind("mousedown", function(){
 				handleFileMoving({
 					profile, files_id, 
 					this_id: this.id, 
 				}); 
 			});
-			$(".fa-xmark").bind("mousedown", function(){
-				const id = this.parentElement.parentElement.id;
-				const filename = id.substring(id.lastIndexOf('-') + 1);
-				
-				profile.setIsClosingFile(true);
-			});
-			$(".fa-xmark").bind("mouseup", function(){
-				const id = this.parentElement.parentElement.id;
-				const filename = id.substring(id.lastIndexOf('-') + 1);
-				const index = profile.checkActiveIndex(filename);
-				
-				profile.closeFile(filename);
-				handleFileClick({ profile, filename: profile.getActiveSection() });
-				profile.setIsClosingFile(false);
-			});
-			
+
 			document.removeEventListener("mousemove", mouseMoveHandler);
 			document.removeEventListener("mouseup", mouseUpHandler);
 		}
@@ -207,6 +182,100 @@
 		document.addEventListener("mouseup", mouseUpHandler);
 	}
 
+	function handleOpenFile(event){
+		const generateFilePathElement = (filename, is_active = true) => {
+			const id = `file-${filename}`;
+			const active_class = (is_active)? " vs-file-active ": "";
+			const file_path_element = `
+                <span id="${id}" class="col-auto vs-file ${active_class}">
+                    <span class="ms-2 me-1 json-yellow">{ }</span>
+                    <span class="text-light">${filename}.json</span>
+                    <span class="ms-2 text-light">
+                        <i class="fa-solid fa-xmark"></i>
+                    </span>
+                </span>
+            `;
+			
+			return file_path_element;
+		}
+
+		const file = event.target.files[0];
+		//	remove the ".json" extension 
+		let filename = file?.name || "";
+		filename = (filename)? filename.substring(0, filename.indexOf('.')): "";
+
+		if(file && filename && file.type === "application/json"){
+			const reader = new FileReader();
+
+			reader.onload = function(e){
+				try{
+					const json_str = e.target.result;
+					const json = JSON.parse(json_str);
+					const base64 = btoa(json_str);
+					const data_url = `data:application/json;base64,${base64}`;
+					const file_path_element = generateFilePathElement(filename);
+					const json_content_element = profile.buildTypedElement(json).trim();
+					
+					profile.files[filename] = data_url;
+					profile.files_id.push(`file-${filename}`);
+					profile.json_content[filename] = json_content_element;
+					
+					//	Append new file content 
+					$("#vs-file-path").append(file_path_element);
+					$("#file-content").append(`
+						<div id="file-content-${filename}">${json_content_element}</div>
+					`.trim());
+					$(`#file-${filename}`).bind("mousedown", function(){
+						handleFileMoving({
+							profile, this_id: this.id, 
+						}); 
+					});
+					
+					//	Default open a new file will hidden blank page 
+					$(`#vs-page`).removeClass("d-none");
+					$(`#closed-page`).removeClass("d-flex");
+					$(`#closed-page`).addClass("d-none");
+
+					profile.setActiveIndex(profile.files_id.length - 1);
+					handleFileClick({ profile, filename: profile.getActiveSection() });
+				}
+				catch(error){
+					console.error(error);
+					console.log(`Fail to parsing JSON content.`);
+				}
+			};
+
+			reader.readAsText(file);
+		}
+		else
+			console.log(`Please upload a valid JSON file.`);
+	}
+
+	function handleCloseFile(){
+		profile.setIsClosingFile(true);
+
+		const id = this.parentElement.parentElement.id;
+		const filename = id.substring(id.lastIndexOf('-') + 1);
+		const index = profile.checkActiveIndex(filename);
+		
+		//	remove the close file element ("#file-xxx" and "#file-content-xxx")
+		$(`#file-${filename}`).remove();
+		$(`#file-content-${filename}`).remove();
+		
+		profile.closeFile(filename);
+
+		//	already closed all files
+		if(profile.files_id.length === 0){
+			$(`#vs-page`).addClass("d-none");
+			$(`#closed-page`).addClass("d-flex");
+			$(`#closed-page`).removeClass("d-none");
+		}
+		else
+			handleFileClick({ profile, filename: profile.getActiveSection() });
+
+		profile.setIsClosingFile(false);
+	}
+
 	$(async() => {
 		try{
 			//	generate require elements and loading with typing effect
@@ -226,31 +295,38 @@
 			profile.setTypingMode(typing_mode);
 		});
 
+		//	When click the command or press Ctrl + O keyboard
+		$(".ctrl-o").bind("click", () => $("#input-json-file").click());
+		$(document).bind("keydown", function(event){
+			//	Ctrl + O
+			const is_press_open = (event.ctrlKey && event.keyCode === 79);
+
+			if(is_press_open){
+				$("#input-json-file").click();
+
+				//	Don't execute default behavior
+				return false;
+			}
+		});
+
+		//	Similar open a new json file
+		$("#input-json-file").bind("change", handleOpenFile);
+
 		//	Similar Close File
-		$(".fa-xmark").bind("mousedown", function(){
-			const id = this.parentElement.parentElement.id;
-			const filename = id.substring(id.lastIndexOf('-') + 1);
-			
-			profile.setIsClosingFile(true);
-		});
-		$(".fa-xmark").bind("mouseup", function(){
-			const id = this.parentElement.parentElement.id;
-			const filename = id.substring(id.lastIndexOf('-') + 1);
-			const index = profile.checkActiveIndex(filename);
-			
-			profile.closeFile(filename);
-			handleFileClick({ profile, filename: profile.getActiveSection() });
-			profile.setIsClosingFile(false);
-		});
+		$(".fa-xmark").bind("mousedown", handleCloseFile);
 		
 		const files_id = Object.keys(profile.files).map(key => `#file-${key}`).join(", ");
-		//	Files selected, dragging, switch position effect
+		//	Similar files selected, dragging, switch position effect
 		$(files_id).bind("mousedown", function(e){
 			handleFileMoving({
 				profile, files_id, 
 				this_id: this.id, 
 			}); 
 		});
+
+		//	based on profile setting enable the design mode
+		if(profile.design_mode)
+			document.designMode = "on";
 	});
 
   </script>
@@ -305,7 +381,7 @@
      <div class="col p-0 text-end closed-file-text">
       Open File
      </div>
-     <div class="col closed-file-command">
+     <div class="col closed-file-command ctrl-o">
       <span class="keyboard">Ctrl</span> + <span class="keyboard">O</span>
      </div>
     </div>
@@ -318,7 +394,9 @@
      <div class="col closed-file-command">
       <span class="keyboard">Ctrl</span> + <span class="keyboard">K</span> 
       <span class="mx-1"></span>
-      <span class="keyboard">Ctrl</span> + <span class="keyboard">O</span> 
+	  <span class="ctrl-o">
+       <span class="keyboard">Ctrl</span> + <span class="keyboard">O</span> 
+	  </span>
      </div>
     </div>
      
@@ -336,6 +414,9 @@
    
    <!-- Drag Element -->
    <div id="draggable" class="vs-file-active"></div>
+
+   <!-- Open JSON File -->
+	<input id="input-json-file" class="d-none" type="file" accept=".json" />
   </div>
   <!-- End of Container -->
 

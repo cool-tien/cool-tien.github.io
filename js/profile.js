@@ -1,14 +1,14 @@
 class Profile{
     constructor({
-        host = window.location.origin, 
         files = {}, 
+		active_index = 0, 
 		typing_mode = false, 
-        active_index = 0, 
+        design_mode = false, 
     }){
-        this.host = host;
         this.files = files;
 		this.files_id = Object.keys(files).map(key => `file-${key}`);
 		this.typing_mode = typing_mode;
+		this.design_mode = design_mode;
         this.json_content = {};
         this.active_index = active_index;
 		this.active_section = Object.keys(files)[active_index];
@@ -25,6 +25,9 @@ class Profile{
 	getJSONContent = () => this.json_content;
 	getActiveIndex = () => this.active_index;
 	getActiveSection = (index = this.active_index) => {
+		//	not more files exist
+		if(this.files_id.length === 0) return "";
+
 		const file_id = this.files_id[index];
 		
 		return file_id?.substring(file_id.indexOf('-') + 1) || 
@@ -68,8 +71,6 @@ class Profile{
         const emails = [
             "@gmail.com", "@outlook.com", "@hotmail.com", 
             "@yahoo.com", "@icloud.com", "@mail.com", 
-            "@aol.com", "@zoho.com", "@protonmail.com", 
-            "@gmx.com", "@yandex.com", 
         ];
 		const is_array = Array.isArray(json);
 		let html_str = ``;
@@ -213,8 +214,7 @@ class Profile{
             let promise_files = [];
             
             for(const section in files){
-                const url = (files[section].includes("https://"))? 
-					files[section]: this.host + files[section];
+                const url = files[section]; 
 				
                 promise_files.push(
                     fetch(url).then(res => res.json())
@@ -320,38 +320,20 @@ class Profile{
 		const is_active_file = (filename === this.getActiveSection());
 		const close_active_index = this.getActiveIndex();
 		
-		//	remove files
+		//	remove the filename data from "this.files" and "this.files_id"
 		const file_id = `file-${filename}`;
+		delete this.files[filename];
 		this.files_id.splice(this.files_id.indexOf(file_id), 1);
 		
-		//	delete filename and close the file and it content
-		delete this.files[filename];
-		$(`#file-${filename}`).css({
-			"display": "none"
-		});
-		$(`#file-content-${filename}`).css({
-			"display": "none"
-		});
-
-		this.setIsClosingFile(true);
-
 		//	switch "active_section" to previous file, if the closed file = "active_section"
 		if(is_active_file){
-			//	Closed all the files
-			if(this.files_id.length === 0){
-				$(`#vs-page`).addClass("d-none");
-				$(`#closed-page`).addClass("d-flex");
-				$(`#closed-page`).removeClass("d-none");
-			}
 			//	Closed latest file
-			else if(this.files_id.length === close_active_index){
+			if(this.files_id.length === close_active_index)
 				this.setActiveSection(this.getActiveSection(close_active_index - 1));
-			}
 			//	Switch to another files
-			else{
+			else
 				//	update active section to new index
 				this.setActiveSection(this.getActiveSection());
-			}
 		}
 	}
 

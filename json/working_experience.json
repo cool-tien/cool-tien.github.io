@@ -1,0 +1,39 @@
+[
+    {
+        "company": {
+            "name": "Greenstem Business Software Sdn Bhd", 
+            "location": "Kuala Lumpur"
+        }, 
+        
+        "position": "Software Engineer", 
+        "employment_type": "Contract", 
+        "start": "2020-11-01T01:00:00.000Z", 
+        "end": "2023-12-31T10:00:00.000Z", 
+        "during": 99824400000, 
+        "responsibilities": [
+            "Solution provider and technical implementer for full stack development of websites or mobile applications."
+        ], 
+        "skillset": [], 
+        "details": [
+            {
+                "type": "Leadership", 
+                "hightlights": [
+
+                ], 
+                "techstack": []
+            }
+        ]
+    }, 
+    {
+        "company": {
+            "name": "Greenstem Business Software Sdn Bhd", 
+            "location": "Kuala Lumpur"
+        }, 
+
+        "position": "Programmer", 
+        "employment_type": "Full-time", 
+        "start": "2015-03-01T01:00:00.000Z", 
+        "end": "2015-08-07T10:00:00.000Z", 
+        "during": 13770000000
+    }
+]

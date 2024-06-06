@@ -41,14 +41,19 @@ html, body {
     box-shadow: -3px 0 5px rgba(0, 0, 0, 0.5);
 }
 
-/*
-    For VS file drag effect
-*/
+/* Similar VS file drag effect */
 #draggable {
     position: absolute;
     opacity: 0.8;
 }
 
+#row-open-file, .ctrl-o {
+    cursor: pointer;
+}
+
+/*
+    [VS Code Color Style]
+*/
 .gray {
     color: gray;
 }
