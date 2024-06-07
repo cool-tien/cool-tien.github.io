@@ -47,7 +47,7 @@ html, body {
     opacity: 0.8;
 }
 
-#row-open-file, .ctrl-o {
+.ctrl-o {
     cursor: pointer;
 }
 
@@ -97,12 +97,8 @@ html, body {
 /*
     [VS Code - JSON File Style]
 */
-.tab {
-    padding-left: 1.5rem;
-}
-
-.tab-double {
-    padding-left: 3rem;
+.json-yellow {
+    color: #f1d700;
 }
 
 .json-property {
@@ -114,15 +110,28 @@ html, body {
 }
 
 .json-number {
-    color: #c8da6b;
+    color: #b5cea8;
 }
 
-.json-yellow {
-    color: #f1d700;
+.json-boolean, .json-null {
+    color: #569cd6;
 }
 
-.json-purple {
-    color: #da70b3;
+/* Layer-1 of Object or Array */
+.json-object-0, .json-array-0 {
+    color: #dbd70a;
+    /* d19a66 */
+}
+
+/* Layer-2 of Object or Array */
+.json-object-1, .json-array-1 {
+    /* color: #da70b3; */
+    color: #d970da;
+}
+
+/* Layer-3 of Object or Array */
+.json-object-2, .json-array-2 {
+    color: #1b9ff1;
 }
 
 /*

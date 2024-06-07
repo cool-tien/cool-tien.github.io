@@ -1,10 +1,14 @@
 {
     "nickname": "cool", 
-    "top_skillsets": [
-        "JavaScript", "Node.js", "T-SQL", "Bootstrap", "React Native"
-    ] ,
-    "position": "Software Engineer", 
-    "working_experience": "3.3 years", 
-    "status": "Roading to MERN stack developer", 
-    "highlight": "Committed to using personal abilities to create value and contribute to the world. Relentless pursuit and never-ending growth to achieve self-transcendence."
+    "role": ["Software Engineer"], 
+    "status": "Seeking opportunities", 
+    "mission": "Committed to using personal abilities to create value and contribute to the world.", 
+    "skillsets": [
+        "JavaScript", "Node.js", "T-SQL", 
+        "Bootstrap", "React Native", 
+        "PHP", "JAVA", "Flutter", "MySQL"
+    ], 
+    "tools": ["Postman", "Google Cloud Platform", "Linux"], 
+    "learning": ["MongoDB", "Next.js"], 
+    "planning": ["Tailwind CSS", "TypeScript"]
 }

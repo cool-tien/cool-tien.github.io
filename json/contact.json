@@ -4,19 +4,7 @@
         "url": "coolmantien@gmail.com"
     }, 
     {
-        "type": "Facebook", 
-        "url": "https://www.facebook.com/cool.void.zero/"
-    }, 
-    {
-        "type": "LinkedIn", 
-        "url": "https://www.linkedin.com/in/cool-void-zero/"
-    }, 
-    {
-        "type": "Github", 
-        "url": "https://github.com/cool-void-zero/"
-    }, 
-    {
-        "type": "LeetCode", 
-        "url": "https://leetcode.com/cool-void-zero/"
+        "type": "Linktree", 
+        "url": "https://linktr.ee/cool.void.zero"
     }
 ]

@@ -14,6 +14,8 @@ class Profile{
 		this.active_section = Object.keys(files)[active_index];
 		//	for tracking closed file
 		this.is_closing_file = false;
+		//	for generate json element tracking the line number
+		this.line = 1;
     }
 
 	/*
@@ -67,144 +69,152 @@ class Profile{
 		this.setActiveIndex(target);
 	}
 
-    buildTypedElement = (json) => {
-        const emails = [
-            "@gmail.com", "@outlook.com", "@hotmail.com", 
-            "@yahoo.com", "@icloud.com", "@mail.com", 
-        ];
-		const is_array = Array.isArray(json);
-		let html_str = ``;
-		let line = 1;
-		
-		if(is_array){
-			//	start of array
-			html_str += `
-				<div>
-					<span class="vs-line gray">${ line++ }</span>
-					<span class="json-yellow">[</span>
+	generateJSONElement = ({ json_obj, depth = 0 }) => {
+		const tab_space = (depth * 1.5) + 'rem';
+		const adjust_style = (depth >= 2)? 
+			// ` style="margin-left: -${depth * 1.5 + 3.75}rem !important" `: "";
+			` style="margin-left: -6.75rem !important" `: "";
+
+		//	default the json file outer label start from '{' or '['
+		const htmlOpenTag = (label = '{') => {
+			const type = (label === '{')? 
+				'object': 'array';
+			
+			return (depth === 0 || label === '{')?
+			// return (depth === 0)?
+			`
+				<div ${adjust_style} data-depth="${depth}">
+					<span class="vs-line gray">${ this.line++ }</span>
+					<span style="padding-left: ${tab_space}" class="json-${type}-${depth % 3}">
+						${label}
+					</span>
 				</div>
+			`.trim(): 
+			`
+				<span class="json-${type}-${depth % 3}">
+				 ${label}
+				</span>
 			`;
+		}
+		//	default the json file outer label start from '{' or ']'
+		const htmlCloseTag = (label = '}') => {
+			const type = (label === '}')? 
+				'object': 'array';
 
-			for(let i=0; i<json.length; i++){
-				//	property list - start looping
-				html_str += `
-					<div>
-						<span class="vs-line gray">${ line++ }</span>
-						<span class="tab json-purple">{</span>
+			if(depth === 0 || label === '}'){
+			// if(depth === 0){
+				return `
+					<div ${adjust_style}>
+						<span class="vs-line gray">${ this.line++ }</span>
+						<span style="padding-left: ${tab_space}" class="json-${type}-${depth % 3}">
+							${label}
+						</span>${depth !== 0? ',': ''}
 					</div>
-				`;
+				`.trim()
+			}
+			else{
+				return `
+					<span class="json-${type}-${depth % 3}">
+						${label}
+					</span>
+				`.trim();
+			}
+		}
+
+		const data_type = typeof json_obj;
+		
+		if(typeof json_obj === 'object' && json_obj !== null){
+			//	Array 
+			if(Array.isArray(json_obj)){
+				//	estimate all the item of array will be same data type 
+				const item_type = typeof json_obj[0] || 'string';
+				const join_symbol = (item_type === 'object')? '': ',';
+				const html_open_tag = htmlOpenTag('[');
+				let html_content = json_obj.map(item => {
+					return this.generateJSONElement({
+						 json_obj: item, 
+						 depth: depth + 1, 
+					});
+				}).join(join_symbol);
 				
-				 for(const [key, val] of Object.entries(json[i])){
-					const type = typeof(val);
-					const is_link = (type === "string")? val.startsWith("http"): false;
-                    const is_email = emails.filter(email => val.toLowerCase().endsWith(email)).length;
-                    let val_content = val;
-
-                    if(is_link)
-                        val_content = `<a href="${val}" target="_blank" class="json-string">${val}</a>`;
-                    else if(is_email)
-                        val_content = `<a href="mailto://${val}" target="_blank" class="json-string">${val}</a>`;
-
-					html_str += `
-						<div class="row m-0">
-							<span class="col-auto vs-line gray">${ line++ }</span>
-							<span class="col pe-0 tab-double" style="max-width: 1000px;">
+				//	will appear extra ',' replace it become blank
+				if(item_type === 'object')
+					html_content = html_content.replace(/,(?=[^,]*$)/, '');
+				
+				return html_open_tag + html_content + htmlCloseTag(']');
+			}
+				
+			//	Object
+			else{
+				const property_space = (depth * 1.5 + 1.5) + 'rem';
+				const html_open_tag = htmlOpenTag('{');
+				const keys = Object.keys(json_obj);
+				let html_content = keys.map((key, i) => {
+					return `
+						<div class="row m-0" ${adjust_style}>
+							<span class="col-auto vs-line gray">${ this.line++ }</span>
+							<span class="col pe-0" style="max-width: 1000px; padding-left: ${property_space}">
 								<span class="json-property">
 									"${key}"
 								</span>:
-								<span class="json-${ typeof(val) }">
-									"${val_content}"
-								</span>, 
+								<span class="json-${ typeof(json_obj[key]) }">
+									${
+										this.generateJSONElement({ 
+											json_obj: json_obj[key], 
+											depth: depth + 1, 
+										})
+									}
+								</span>
+								${(i + 1) === keys.length? '': `,`}
 							</span>
 						</div>
 					`;
-				}
+				}).join("");
 				
-				//	property list - end looping
-				html_str += `
-					<div>
-						<span class="vs-line gray">${ line++ }</span>
-						<span class="tab json-purple">}</span>
-						${(i + 1 === json.length)? "": ","}
-					</div>
-				`;
+				return html_open_tag + html_content + htmlCloseTag('}');
 			}
-			
-			//	end of array
-			html_str += `
-				<div>
-					<span class="vs-line gray">${ line++ }</span>
-					<span class="json-yellow">]</span>
-				</div>
-			`;
-			html_str += `
-				<span>
-					<span class="vs-line">${ line++ }</span>
-					<span class="typed-cursor typed-cursor--blink">|</span>
-				</span>
-			`;
 		}
-		else{
-			//	start of array
-			html_str += `
-				<div>
-					<span class="vs-line gray">${ line++ }</span>
-					<span class="json-yellow">{</span>
-				</div>
-			`;
+		//	String
+		else if(data_type === 'string'){
+			const emails = [
+				"@gmail.com", "@outlook.com", "@hotmail.com", 
+				"@yahoo.com", "@icloud.com", "@mail.com", 
+			];
+			const is_link = (json_obj.startsWith("http"));
+			const is_email = emails.filter(email => json_obj.toLowerCase().endsWith(email)).length;
+			let content = json_obj;
 			
-			for(const [key, val] of Object.entries(json)){
-				let type = Array.isArray(val)? "array": typeof(val);
-				let ele_val = ``;
-
-				if(type === "array"){
-					ele_val = `
-						<span class="json-purple">[</span>
-							${
-								val.map(s => 
-									`<span class="json-string">"${s}"</span>`
-								).join(", ")
-							}
-						<span class="json-purple">]</span> , 
-					`;
-				}
-				else{
-					ele_val = `
-						<span class="json-${ typeof(val) }">
-							"${val}"
-						</span>, 
-					`;
-				}
-				
-				html_str += `
-					<div class="row m-0">
-						<span class="col-auto vs-line gray">${ line++ }</span>
-						<span class="col pe-0 tab" style="max-width: 1000px;">
-							<span class="json-property">
-								"${key}"
-							</span>:
-							${ ele_val }
-						</span>
-					</div>
-				`;
-			}
-
-			//	start of array
-			html_str += `
-				<div>
-					<span class="vs-line gray">${ line++ }</span>
-					<span class="json-yellow">}</span>
-				</div>
-			`;
-			html_str += `
-				<span>
-					<span class="vs-line">${ line++ }</span>
-					<span class="typed-cursor typed-cursor--blink">|</span>
+			if(is_link)
+				content = `<a class="json-string" href="${content}" target="_blank">${content}</a>`;
+			else if(is_email)
+				content = `<a class="json-string" href="mailto://${content}">${content}</a>`;
+			
+			return `
+				<span class="json-string">
+					"${content}"
 				</span>
-			`;
+			`.trim();
 		}
-
-		return html_str;
+		//	Number | Boolean | Null
+		else if(data_type === 'number' || data_type === 'boolean'){
+			return `
+				<span class="json-${data_type}">
+					${json_obj}
+				</span>
+			`.trim();
+		}
+		else if(json_obj === null)
+			return `
+				<span class="json-null">
+					null
+				</span>
+			`.trim();
+		else
+			return `
+				<span class="json-string">
+					"unknow"
+				</span>
+			`.trim();
 	}
 
     buildJSONContent = async(files = this.files) => {
@@ -222,11 +232,20 @@ class Profile{
             }
 
             const json_contents = await Promise.all(promise_files);
-            let idx = 0;
+            let index = 0;
             
             for(const section in files){
-                result[section] = this.buildTypedElement(json_contents[idx]);
-                idx++;
+                this.line = 1;
+				const json_obj = json_contents[index];
+				const json_element = this.generateJSONElement({ json_obj }) + 
+				//	blink effect on the last line
+				`<span>
+					<span class="vs-line">${ this.line }</span>
+					<span class="typed-cursor typed-cursor--blink">|</span>
+				</span>`;
+
+				result[section] = json_element;
+                index++;
             }
             
             //  re-assign 
@@ -390,5 +409,4 @@ class Profile{
     }
 }
 
-// export default Profile;
 window.Profile = Profile;
