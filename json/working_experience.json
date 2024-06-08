@@ -1,34 +1,68 @@
 [
     {
         "company_name": "Greenstem Business Software Sdn Bhd", 
-        "position": "Software Engineer", 
+        "website": "https://www.greenstem.com.my/", 
+        "role": "Software Engineer", 
         "employment_type": "Contract", 
         
         "start": "2020-11-01T01:00:00.000Z", 
         "end": "2023-12-31T10:00:00.000Z", 
-        "during": 99824400000, 
-
+        
         "responsibilities": [
             "Solution provider and technical implementer for full stack development of websites or mobile applications."
         ], 
-        "skillset": [], 
+        "techstack": [
+            "JavaScript", "Node.js", "T-SQL", "Bootstrap", 
+            "React Native", "PHP", "Java", "Flutter"
+        ], 
         "details": [
             {
-                "type": "Leadership", 
-                "hightlights": [
-
-                ], 
-                "techstack": []
+                "title": "Leadership", 
+                "description": "Teach or guide interns completed rebuilt the official website, adding new features in other projects, and code review or solution design for them."
+            }, 
+            {
+                "title": "Build License System", 
+                "description": "Developed a cloud authentication license system with unified API and database management across different applications, provided UI web for colleagues to generate and edit status of license key."
+            }, 
+            {
+                "title": "Development Mobile Application", 
+                "description": "Using React Native and Express.js development an inventory management application that includes barcode or QR code detect and above cloud license."
+            }, 
+            {
+                "title": "Add Extend Function", 
+                "description": "Use PHP fpdf library generate invoice pdf file and convert into base64 for response to mobile application(Java) store it and forward the pdf file."
+            }, 
+            {
+                "title": "Development Digital Signature", 
+                "description": "Implemented a digital signature website for PDF file, supporting custom size, color, watermark text and position.", 
+                "website": "https://cool-void-zero.github.io/digital-signature/"
             }
         ]
     }, 
     {
         "company_name": "Greenstem Business Software Sdn Bhd", 
-        "position": "Programmer", 
+        "website": "https://www.greenstem.com.my/", 
+        "role": "Programmer", 
         "employment_type": "Full-time", 
         
         "start": "2015-03-01T01:00:00.000Z", 
         "end": "2015-08-07T10:00:00.000Z", 
-        "during": 13770000000
+        
+        "responsibilities": ["Standardize SQL queries", "Improve performance"], 
+        "techstack": ["T-SQL", "PHP", "JavaScript", "jQuery", "VB6"], 
+        "details": [
+            {
+                "title": "Standardize SQL Queries", 
+                "description": "Standardize SQL queries for import data from another accounting system into Microsoft SQL Server."
+            }, 
+            {
+                "title": "Development Website", 
+                "description": "Independently built a website based on PHP and jQuery for support team department in work record management and generate PDF reports."
+            }, 
+            {
+                "title": "Development VB Tool", 
+                "description": "Using VB6 development a extend tool function that support import excel data into Microsoft SQL Server specify table."
+            }
+        ]
     }
 ]

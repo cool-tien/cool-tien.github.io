@@ -146,6 +146,8 @@ class Profile{
 				
 			//	Object
 			else{
+				//	180px for canvas, 80px for width of row line 
+				const max_width_style = `calc(100% - 180px - 80px)`;
 				const property_space = (depth * 1.5 + 1.5) + 'rem';
 				const html_open_tag = htmlOpenTag('{');
 				const keys = Object.keys(json_obj);
@@ -153,7 +155,7 @@ class Profile{
 					return `
 						<div class="row m-0" ${adjust_style}>
 							<span class="col-auto vs-line gray">${ this.line++ }</span>
-							<span class="col pe-0" style="max-width: 1000px; padding-left: ${property_space}">
+							<span class="col pe-0" style="max-width: ${max_width_style}; padding-left: ${property_space}">
 								<span class="json-property">
 									"${key}"
 								</span>:
