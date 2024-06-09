@@ -7,7 +7,7 @@ A personal website simulates some of VS Code features and preview with .json fil
 - Select different JSON files
 - Moving (dragable) filename to switch position
 - Close files and preview the VS Code blank page
-- Open .json file will load and preview the contnet
+- Open .json file will load and preview the content
 - Preview the code of thumbnail
 
 ## Usage
