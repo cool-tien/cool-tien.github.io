@@ -22,7 +22,7 @@
   <script src="./js/handler.js"></script>
   <script>
 
-	let profile = new Profile({
+	const profile = new Profile({
 		files: {
 			"about_me": "https://cool-void-zero.github.io/json/about_me.json", 
 			"portfolio": "https://cool-void-zero.github.io/json/portfolio.json", 
@@ -48,6 +48,7 @@
 		}
 
 		//	Switch Typing Effect
+		document.querySelector("#switch-typing-effect").checked = profile.typing_mode;
 		$("#switch-typing-effect").bind("change", () => {
 			typing_mode = document.querySelector("#switch-typing-effect").checked;
 			profile.setTypingMode(typing_mode);

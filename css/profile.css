@@ -26,6 +26,10 @@ html, body {
     user-select: none;
 }
 
+#vs-path {
+    font-size: 14px;
+}
+
 #file-content {
     background-color: #1f1f1f;
 }
