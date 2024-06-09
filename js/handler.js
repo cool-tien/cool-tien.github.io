@@ -41,9 +41,10 @@ function handleFileMoving({ profile, files_id, this_id }){
         for(let i=0; i<files_position.length; i++){
             const { x, mid, width } = files_position[i];
 
-            //  moving across current file, jump to next index
+            //  moving across current file, jump to next index 
             if(moving_x > (x + width))
-                position_index = i + 1;
+                //  limit to length of array - 1 (most right side)
+                position_index = Math.min(i + 1, files_position.length - 1);
             //  moving more than half will show right (next) border
             if(moving_x > mid)
                 border_index = i + 1;
