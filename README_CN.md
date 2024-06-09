@@ -11,7 +11,7 @@
 - 顯示程式碼的縮圖
 
 ## Usage
-Fork or download and upload to your repository. Update inside the json folder content and setting the Profile: 
+Fork 或者下載並上傳至您的 repository。之後，更新 json 文件夾裡面的內容，並在 **"index.html"** 中設置 Profile：
 
 ```javascript
 const profile = new Profile({

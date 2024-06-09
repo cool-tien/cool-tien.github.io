@@ -11,7 +11,7 @@ A personal website simulates some of VS Code features and preview with .json fil
 - Preview the code of thumbnail
 
 ## Usage
-Fork or download and upload to your repository. Update inside the json folder content and setting the Profile: 
+Fork or download and upload to your repository. Update inside the json folder content and **setting the Profile** in the **"index.html"**: 
 
 ```javascript
 const profile = new Profile({
