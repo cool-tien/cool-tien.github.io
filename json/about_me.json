@@ -1,14 +1,11 @@
 {
     "nickname": "cool", 
     "role": ["Software Engineer"], 
-    "status": "probation period", 
+    "status": "Seeking Opportunities", 
     "mission": "Committed to using personal abilities to create value and contribute to the world.", 
     "skillsets": [
-        "JavaScript", "Node.js", "T-SQL", 
-        "Bootstrap", "React Native", 
-        "PHP", "Java", "Flutter", "MySQL"
+        "JavaScript", "Node.js", "React Native", "Next.js", 
+        "T-SQL", "MongoDB", 
     ], 
-    "tools": ["Postman", "Google Cloud Platform", "Linux"], 
-    "learning": ["MongoDB", "Next.js"], 
-    "planning": ["Tailwind CSS", "TypeScript"]
+    "tools": ["Postman", "Google Cloud Platform"]
 }
